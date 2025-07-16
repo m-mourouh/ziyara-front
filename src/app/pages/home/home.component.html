@@ -1,0 +1,85 @@
+<!-- src/app/pages/home/home.component.html -->
+<!-- ✅ Fixed HTML structure with proper opening/closing tags -->
+
+<section class="bg-gradient-to-r from-orange-500 to-red-500 text-white py-20">
+  <div class="container mx-auto px-4 text-center">
+    <h1 class="text-5xl font-bold mb-6">Découvrez Marrakech</h1>
+    <p class="text-xl mb-8">Trouvez les meilleurs hôtels pour votre séjour</p>
+    <a routerLink="/hotels" class="bg-white text-orange-500 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition duration-300">
+      Explorer les Hôtels
+    </a>
+  </div>
+</section>
+
+<!-- Featured Hotels Section -->
+<section class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Hôtels Recommandés</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" *ngIf="featuredHotels.length > 0">
+      <div *ngFor="let hotel of featuredHotels" class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
+        <img [src]="hotel.image" [alt]="hotel.name" class="w-full h-48 object-cover">
+        <div class="p-6">
+          <h3 class="text-xl font-semibold mb-2 text-gray-800">{{ hotel.name }}</h3>
+          <p class="text-gray-600 mb-4 line-clamp-2">{{ hotel.description }}</p>
+          
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center">
+              <span class="text-orange-500 font-bold">{{ hotel.score }}/10</span>
+              <span class="text-gray-500 ml-2">({{ hotel.review }} avis)</span>
+            </div>
+            <span class="text-2xl font-bold text-orange-500">{{ hotel.price }}€</span>
+          </div>
+          
+          <div class="flex items-center justify-between">
+            <span class="text-gray-500">
+              <i class="pi pi-map-marker mr-1"></i>
+              {{ hotel.location }}
+            </span>
+            <a [routerLink]="['/hotels', hotel.id]" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition duration-300">
+              Voir Détails
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="featuredHotels.length === 0" class="text-center py-12">
+      <p class="text-gray-500 text-lg">Aucun hôtel trouvé pour le moment.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="py-16 bg-white">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Pourquoi Choisir Ziyara?</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="text-center">
+        <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="pi pi-star text-orange-500 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Recommandations Personnalisées</h3>
+        <p class="text-gray-600">Des suggestions d'hôtels basées sur vos préférences et votre historique.</p>
+      </div>
+      
+      <div class="text-center">
+        <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="pi pi-shield text-orange-500 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Avis Vérifiés</h3>
+        <p class="text-gray-600">Des commentaires authentiques de vrais voyageurs pour vous guider.</p>
+      </div>
+      
+      <div class="text-center">
+        <div class="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="pi pi-heart text-orange-500 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Meilleurs Prix</h3>
+        <p class="text-gray-600">Trouvez les meilleures offres pour votre budget et vos dates.</p>
+      </div>
+    </div>
+  </div>
+</section>

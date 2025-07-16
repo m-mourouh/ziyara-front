@@ -1,0 +1,79 @@
+<header
+  class="bg-surface-0 shadow-md sticky top-0 z-50 border-b border-surface-200"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo and Brand -->
+      <div
+        class="flex items-center cursor-pointer"
+        (click)="router.navigate(['/home'])"
+      >
+        <img src="/src/assets/images/logo.svg" alt="Ziyara">
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex space-x-8">
+        <a
+          *ngFor="let item of userMenuItems"
+          [routerLink]="item.routerLink"
+          routerLinkActive="text-primary-600 border-b-2 border-primary-600"
+          class="text-surface-700 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors duration-200 border-b-2 border-transparent"
+        >
+          <i [class]="item.icon + ' mr-1'"></i>
+          {{ item.label }}
+        </a>
+      </nav>
+
+      <!-- User Menu / Auth Buttons -->
+      <div class="flex items-center space-x-4">
+        <!-- If user is logged in -->
+        <div *ngIf="currentUser" class="flex items-center space-x-3">
+          <span class="text-sm text-surface-600 hidden sm:block">
+            Bonjour, {{ currentUser.firstname }}
+          </span>
+
+          <p-button
+            icon="pi pi-user"
+            severity="secondary"
+            [text]="true"
+            [rounded]="true"
+            pTooltip="Menu utilisateur"
+            (click)="userMenu.toggle($event)"
+          ></p-button>
+
+          <p-menu #userMenu [popup]="true" [model]="userMenuItems"></p-menu>
+        </div>
+
+        <!-- If user is not logged in -->
+        <div *ngIf="!currentUser" class="flex items-center space-x-2">
+          <p-button
+            label="Connexion"
+            severity="secondary"
+            [outlined]="true"
+            size="small"
+            (click)="navigateToAuth('login')"
+          ></p-button>
+
+          <p-button
+            label="S'inscrire"
+            size="small"
+            (click)="navigateToAuth('register')"
+          ></p-button>
+        </div>
+
+        <!-- Mobile menu button -->
+        <div class="md:hidden">
+          <p-button
+            icon="pi pi-bars"
+            severity="secondary"
+            [text]="true"
+            [rounded]="true"
+            (click)="mobileMenu.toggle($event)"
+          ></p-button>
+
+          <p-menu #mobileMenu [popup]="true" [model]="userMenuItems"></p-menu>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

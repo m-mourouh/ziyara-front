@@ -1,0 +1,118 @@
+<div
+  class="min-h-screen bg-surface-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-md w-full space-y-8">
+    <!-- Logo -->
+    <div class="text-center">
+      <img
+        src="assets/logo.png"
+        alt="Logo de l'application"
+        class="mx-auto h-12 w-auto"
+      />
+      <h2 class="mt-6 text-3xl font-bold text-surface-900">
+        Connexion à votre compte
+      </h2>
+      <p class="mt-2 text-sm text-surface-600">
+        Accédez à vos recommandations personnalisées
+      </p>
+    </div>
+
+    <!-- Login Form -->
+    <p-card class="mt-8">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Email Field -->
+        <div>
+          <label
+            for="email"
+            class="block text-sm font-medium text-surface-700 mb-2"
+          >
+            Adresse email
+          </label>
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-envelope"></i>
+            <input
+              id="email"
+              type="email"
+              pInputText
+              formControlName="email"
+              placeholder="votre@email.com"
+              class="w-full"
+              [class.ng-invalid]="
+                loginForm.get('email')?.invalid &&
+                loginForm.get('email')?.touched
+              "
+            />
+          </span>
+          <small
+            *ngIf="
+              loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+            "
+            class="p-error block mt-1"
+          >
+            Veuillez saisir une adresse email valide
+          </small>
+        </div>
+
+        <!-- Password Field -->
+        <div>
+          <label
+            for="password"
+            class="block text-sm font-medium text-surface-700 mb-2"
+          >
+            Mot de passe
+          </label>
+          <p-password
+            formControlName="password"
+            placeholder="Votre mot de passe"
+            [feedback]="false"
+            [toggleMask]="true"
+            inputStyleClass="w-full"
+            styleClass="w-full"
+            [class.ng-invalid]="
+              loginForm.get('password')?.invalid &&
+              loginForm.get('password')?.touched
+            "
+          ></p-password>
+          <small
+            *ngIf="
+              loginForm.get('password')?.invalid &&
+              loginForm.get('password')?.touched
+            "
+            class="p-error block mt-1"
+          >
+            Le mot de passe doit contenir au moins 6 caractères
+          </small>
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+          <p-button
+            type="submit"
+            label="Se connecter"
+            icon="pi pi-sign-in"
+            [loading]="loading"
+            [disabled]="loginForm.invalid"
+            styleClass="w-full justify-center"
+            size="large"
+          ></p-button>
+        </div>
+
+        <!-- Register Link -->
+        <!-- <div class="text-center">
+          <span class="text-sm text-surface-600">
+            Pas encore de compte ?
+            <button
+              type="button"
+              class="font-medium text-primary-600 hover:text-primary-500 cursor-pointer"
+              (click)="navigateToRegister()"
+            >
+              Créer un compte
+            </button>
+          </span>
+        </div> -->
+      </form>
+    </p-card>
+  </div>
+</div>
+
+<p-toast></p-toast>

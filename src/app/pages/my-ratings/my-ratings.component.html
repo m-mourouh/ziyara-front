@@ -1,0 +1,330 @@
+<div class="min-h-screen bg-surface-50 py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Page Header -->
+    <div class="mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-surface-900 mb-2">Mes Évaluations</h1>
+          <p class="text-surface-600">Gérez vos avis et évaluations d'hôtels</p>
+        </div>
+        
+        <div class="flex items-center space-x-3 mt-4 sm:mt-0">
+          <p-button 
+            icon="pi pi-refresh" 
+            severity="secondary"
+            styleClass="p-button-outlined"
+            pTooltip="Actualiser"
+            (click)="refreshRatings()"
+            [loading]="loading"
+          ></p-button>
+          
+          <p-button 
+            label="Explorer les hôtels" 
+            icon="pi pi-search"
+            severity="secondary"
+            (click)="navigateToHotels()"
+          ></p-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <p-card styleClass="text-center">
+        <div class="text-3xl font-bold text-primary-600 mb-2">{{ totalRatings }}</div>
+        <div class="text-surface-600 text-sm">Total des évaluations</div>
+      </p-card>
+
+      <p-card styleClass="text-center">
+        <div class="text-3xl font-bold mb-2" [ngClass]="getStatColor(averageRating, 'rating')">
+          {{ averageRating.toFixed(1) }}
+        </div>
+        <div class="text-surface-600 text-sm">Note moyenne donnée</div>
+      </p-card>
+
+      <p-card styleClass="text-center">
+        <div class="text-lg font-bold text-primary-600 mb-2">{{ favoriteLocation || 'N/A' }}</div>
+        <div class="text-surface-600 text-sm">Lieu préféré</div>
+      </p-card>
+
+      <p-card styleClass="text-center">
+        <div class="text-lg font-bold text-primary-600 mb-2 truncate" [title]="highestRatedHotel">
+          {{ highestRatedHotel || 'N/A' }}
+        </div>
+        <div class="text-surface-600 text-sm">Hôtel le mieux noté</div>
+      </p-card>
+    </div>
+
+    <!-- Sort and Filter Controls -->
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div class="mb-4 sm:mb-0">
+        <label class="block text-sm font-medium text-surface-700 mb-2">
+          Trier par :
+        </label>
+        <!-- <p-dropdown 
+          [options]="sortOptions"
+          [(ngModel)]="selectedSort"
+          optionLabel="label"
+          optionValue="value"
+          (onChange)="onSortChange($event)"
+          styleClass="w-48"
+        ></p-dropdown> -->
+      </div>
+      
+      <div class="text-sm text-surface-600">
+        {{ totalRatings }} évaluation(s) au total
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <p-card *ngFor="let item of [1,2,3,4,5,6]" styleClass="h-full">
+        <ng-template pTemplate="header">
+          <p-skeleton height="200px"></p-skeleton>
+        </ng-template>
+        <div class="space-y-3">
+          <p-skeleton height="1.5rem" width="80%"></p-skeleton>
+          <p-skeleton height="1rem" width="60%"></p-skeleton>
+          <p-skeleton height="4rem" width="100%"></p-skeleton>
+          <p-skeleton height="1rem" width="40%"></p-skeleton>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && userRatings.length === 0" class="text-center py-16">
+      <div class="text-6xl text-surface-300 mb-4">⭐</div>
+      <h3 class="text-xl font-semibold text-surface-700 mb-2">Aucune évaluation</h3>
+      <p class="text-surface-500 mb-6">Vous n'avez pas encore évalué d'hôtels</p>
+      <p-button 
+        label="Explorer les hôtels" 
+        icon="pi pi-search"
+        severity="secondary"
+        (click)="navigateToHotels()"
+      ></p-button>
+    </div>
+
+    <!-- Ratings Grid -->
+    <div *ngIf="!loading && userRatings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <p-card *ngFor="let rating of getPaginatedRatings()" styleClass="h-full hover:shadow-lg transition-shadow duration-300">
+        
+        <!-- Hotel Image -->
+        <ng-template pTemplate="header">
+          <div class="relative cursor-pointer" (click)="navigateToHotel(rating.hotelId)">
+            <img 
+              [src]="getHotelImage(rating)" 
+              [alt]="rating.hotelName"
+              class="w-full h-48 object-cover hover:opacity-90 transition-opacity duration-300"
+              onerror="this.src='/assets/images/hotel-placeholder.jpg'"
+            />
+            <div class="absolute top-4 right-4">
+              <p-tag 
+                [value]="rating.rating + '/5'"
+                [severity]="getRatingColor(rating.rating)"
+                styleClass="text-sm font-semibold"
+              ></p-tag>
+            </div>
+            <div class="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+              {{ getTimeAgo(rating.createdAt) }}
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- Hotel Info & Rating -->
+        <div class="space-y-4 flex-1">
+          <div>
+            <h3 class="text-lg font-semibold text-surface-900 mb-2 cursor-pointer hover:text-primary-600 transition-colors duration-200 line-clamp-2"
+                (click)="navigateToHotel(rating.hotelId)"
+                [title]="rating.hotelName">
+              {{ rating.hotelName }}
+            </h3>
+            
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-2">
+                <!-- <p-rating 
+                  [ngModel]="rating.rating" 
+                  [readonly]="true" 
+                  [stars]="5"
+                  styleClass="text-sm"
+                ></p-rating> -->
+                <span class="text-sm font-medium text-surface-700">
+                  {{ getRatingText(rating.rating) }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex-1">
+            <p class="text-surface-700 text-sm leading-relaxed line-clamp-3" [title]="rating.comment">
+              {{ rating.comment }}
+            </p>
+          </div>
+
+          <!-- Hotel Details -->
+          <div *ngIf="rating.hotel" class="text-xs text-surface-500 space-y-1">
+            <div class="flex items-center">
+              <i class="pi pi-map-marker mr-2"></i>
+              {{ rating.hotel.location }}
+            </div>
+            <div class="flex items-center">
+              <i class="pi pi-tag mr-2"></i>
+              {{ rating.hotel.price }} MAD/nuit
+            </div>
+          </div>
+
+          <div class="text-xs text-surface-400 pt-2 border-t border-surface-100">
+            Évalué le {{ formatDate(rating.createdAt) }}
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <ng-template pTemplate="footer">
+          <div class="flex justify-between items-center pt-4">
+            <p-button 
+              label="Voir l'hôtel" 
+              icon="pi pi-eye"
+              severity="secondary"
+              styleClass="p-button-outlined p-button-sm"
+              (click)="navigateToHotel(rating.hotelId)"
+            ></p-button>
+            
+            <div class="flex space-x-2">
+              <p-button 
+                icon="pi pi-pencil" 
+                severity="info"
+                styleClass="p-button-outlined p-button-sm"
+                pTooltip="Modifier l'évaluation"
+                (click)="editRating(rating)"
+                [disabled]="updatingRating"
+              ></p-button>
+              <p-button 
+                icon="pi pi-trash" 
+                severity="danger"
+                styleClass="p-button-outlined p-button-sm"
+                pTooltip="Supprimer l'évaluation"
+                (click)="confirmDeleteRating(rating)"
+                [disabled]="deletingRating"
+              ></p-button>
+            </div>
+          </div>
+        </ng-template>
+      </p-card>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="!loading && totalRatings > itemsPerPage" class="mt-8 flex justify-center">
+      <p-paginator 
+        [rows]="itemsPerPage"
+        [totalRecords]="totalRatings"
+        [first]="currentPage * itemsPerPage"
+        (onPageChange)="onPageChange($event)"
+        [showFirstLastIcon]="true"
+        [showPageLinks]="true"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Affichage {first} à {last} de {totalRecords} évaluations"
+      ></p-paginator>
+    </div>
+
+    <!-- Edit Rating Dialog -->
+    <p-dialog 
+      header="Modifier l'évaluation"
+      [(visible)]="showEditDialog"
+      [style]="{ width: '500px' }"
+      [modal]="true"
+      [draggable]="false"
+      [resizable]="false"
+      [closeOnEscape]="true"
+      styleClass="p-dialog-header-minimize"
+    >
+      <form [formGroup]="editForm" (ngSubmit)="updateRating()" *ngIf="selectedRating">
+        <div class="space-y-6">
+          
+          <!-- Hotel Info (Read-only) -->
+          <div class="bg-surface-50 p-4 rounded-lg">
+            <div class="flex items-center space-x-3">
+              <img 
+                [src]="getHotelImage(selectedRating)" 
+                [alt]="selectedRating.hotelName"
+                class="w-16 h-16 object-cover rounded-lg"
+                onerror="this.src='/assets/images/hotel-placeholder.jpg'"
+              />
+              <div>
+                <h4 class="font-semibold text-surface-900">{{ selectedRating.hotelName }}</h4>
+                <p class="text-sm text-surface-600">{{ selectedRating.hotel?.location }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rating -->
+          <div>
+            <label class="block text-sm font-medium text-surface-700 mb-2">
+              Note * <span class="text-surface-500">({{ editForm.get('rating')?.value }}/5 - {{ getRatingText(editForm.get('rating')?.value) }})</span>
+            </label>
+            <p-rating 
+              formControlName="rating"
+              [stars]="5"
+              styleClass="text-lg"
+            ></p-rating>
+          </div>
+
+          <!-- Comment -->
+          <div>
+            <label for="comment" class="block text-sm font-medium text-surface-700 mb-2">
+              Commentaire * 
+              <span class="text-surface-500">({{ editForm.get('comment')?.value?.length || 0 }}/500 caractères)</span>
+            </label>
+            <textarea 
+              pInputTextarea 
+              id="comment"
+              formControlName="comment"
+              rows="4" 
+              class="w-full"
+              placeholder="Partagez votre expérience dans cet hôtel..."
+              [class.ng-invalid]="editForm.get('comment')?.invalid && editForm.get('comment')?.touched"
+              maxlength="500"
+            ></textarea>
+            <small 
+              *ngIf="editForm.get('comment')?.invalid && editForm.get('comment')?.touched"
+              class="text-red-500"
+            >
+              Le commentaire est requis (minimum 10 caractères, maximum 500)
+            </small>
+          </div>
+
+          <!-- Original Rating Info -->
+          <div class="text-xs text-surface-500 bg-surface-50 p-3 rounded">
+            <strong>Évaluation originale :</strong> {{ selectedRating.rating }}/5 - {{ getRatingText(selectedRating.rating) }}<br>
+            <strong>Date :</strong> {{ formatDate(selectedRating.createdAt) }}
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-surface-200">
+          <p-button 
+            label="Annuler" 
+            severity="secondary"
+            styleClass="p-button-outlined"
+            type="button"
+            (click)="showEditDialog = false"
+            [disabled]="updatingRating"
+          ></p-button>
+          <p-button 
+            label="Sauvegarder" 
+            icon="pi pi-check"
+            type="submit"
+            [disabled]="editForm.invalid || updatingRating"
+            [loading]="updatingRating"
+          ></p-button>
+        </div>
+      </form>
+    </p-dialog>
+
+    <!-- Loading Overlay -->
+    <div *ngIf="loadingHotelDetails" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 flex flex-col items-center">
+        <p-progressSpinner strokeWidth="4" animationDuration="1s"></p-progressSpinner>
+        <p class="mt-4 text-surface-700">Chargement des détails des hôtels...</p>
+      </div>
+    </div>
+  </div>
+</div>

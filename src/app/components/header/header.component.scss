@@ -1,0 +1,9 @@
+:host {
+    display: block;
+  }
+  
+  .router-link-active {
+    // @apply text-primary-600 border-primary-600;
+    color: var(--primary-600);
+    border-bottom: 2px solid var(--primary-600);
+  }

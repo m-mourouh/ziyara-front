@@ -1,0 +1,173 @@
+<div class="min-h-screen bg-surface-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-2xl mx-auto">
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <img
+        src="assets/logo.png"
+        alt="Logo de Ziyara"
+        class="mx-auto h-12 w-auto"
+      />
+      <h2 class="mt-6 text-3xl font-bold text-surface-900">
+        Créer votre compte
+      </h2>
+      <p class="mt-2 text-sm text-surface-600">
+        Rejoignez Ziyara pour des recommandations personnalisées
+      </p>
+    </div>
+
+    <!-- Registration Form -->
+    <p-card>
+      <form
+        [formGroup]="registerForm"
+        (ngSubmit)="onSubmit()"
+        class="space-y-6"
+      >
+        <!-- Name Fields -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-surface-700 mb-2"
+              >Prénom</label
+            >
+            <input
+              type="text"
+              pInputText
+              formControlName="firstname"
+              placeholder="Votre prénom"
+              class="w-full"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-surface-700 mb-2"
+              >Nom</label
+            >
+            <input
+              type="text"
+              pInputText
+              formControlName="lastname"
+              placeholder="Votre nom"
+              class="w-full"
+            />
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-medium text-surface-700 mb-2"
+            >Email</label
+          >
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-envelope"></i>
+            <input
+              type="email"
+              pInputText
+              formControlName="email"
+              placeholder="votre@email.com"
+              class="w-full"
+            />
+          </span>
+        </div>
+
+        <!-- Birthdate and Gender -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-surface-700 mb-2"
+              >Date de naissance</label
+            >
+            <p-calendar
+              formControlName="birthdate"
+              placeholder="Sélectionner une date"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              inputStyleClass="w-full"
+              styleClass="w-full"
+            ></p-calendar>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-surface-700 mb-2"
+              >Genre</label
+            >
+            <p-dropdown
+              formControlName="gender"
+              [options]="genderOptions"
+              placeholder="Sélectionner"
+              styleClass="w-full"
+            ></p-dropdown>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="block text-sm font-medium text-surface-700 mb-2"
+            >Mot de passe</label
+          >
+          <p-password
+            formControlName="password"
+            placeholder="Choisir un mot de passe"
+            [toggleMask]="true"
+            inputStyleClass="w-full"
+            styleClass="w-full"
+          ></p-password>
+        </div>
+
+        <!-- Hotel Preference -->
+        <div>
+          <label class="block text-sm font-medium text-surface-700 mb-2">
+            Préférence d'hébergement
+          </label>
+          <p-dropdown
+            formControlName="hVersion"
+            [options]="hotelVersionOptions"
+            placeholder="Choisir votre style préféré"
+            styleClass="w-full"
+          ></p-dropdown>
+          <small class="text-surface-500 mt-1 block">
+            Cela nous aide à personnaliser vos recommandations
+          </small>
+        </div>
+
+        <!-- Address (Optional) -->
+        <div>
+          <label class="block text-sm font-medium text-surface-700 mb-2">
+            Adresse (optionnel)
+          </label>
+          <input
+            type="text"
+            pInputText
+            formControlName="address"
+            placeholder="Votre adresse"
+            class="w-full"
+          />
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+          <p-button
+            type="submit"
+            label="Créer mon compte"
+            icon="pi pi-user-plus"
+            [loading]="loading"
+            [disabled]="registerForm.invalid"
+            styleClass="w-full justify-center"
+            size="large"
+          ></p-button>
+        </div>
+
+        <!-- Login Link -->
+        <!-- <div class="text-center">
+          <span class="text-sm text-surface-600">
+            Déjà un compte ?
+            <button
+              type="button"
+              class="font-medium text-primary-600 hover:text-primary-500 cursor-pointer"
+              (click)="navigateToLogin()"
+            >
+              Se connecter
+            </button>
+          </span>
+        </div> -->
+      </form>
+    </p-card>
+  </div>
+</div>
+
+<p-toast></p-toast>
